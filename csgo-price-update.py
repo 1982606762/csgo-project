@@ -13,11 +13,10 @@ c = conn.cursor()
 headers = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36'
 }
-cookie_str = '__bid_n=18496259992cf2e3214207; _ntes_nuid=c6ea6a66684bc7df7b67e0b545b74351; ne_analysis_trace_id=1672862690268; s_n_f_l_n3=49e4cead60e9d3de1672862690279; pver_n_f_l_n3=a; vinfo_n_f_l_n3=49e4cead60e9d3de.1.0.1672862690279.0.1672862890719; Device-Id=PeA8EzsApte23iZ1Gsve; Locale-Supported=zh-Hans; game=csgo; NTES_YD_SESS=DvVck9cY4O4.wen9U8nFJiit8KMxHYnu95MrTDs9Rwi9Ke8zgMqQWib1m7HZoDhQGklSzIbj2CF21wgIQO4wv8Onk_BPZfjIj69Ww8xCjEGPU2C.NOjterUyLBWsc37tFw7WdojWqQaEvLGgjKuP.qgvSF3hMSQ1AbUMohUCKnve6fQq6RjSCEI9KmpyDe7db5EzWQZbPq5I.q78DlTk5bFSFvfUmkQj1OCeHLQEwx7lc; S_INFO=1672998315|0|0&60##|17302206700; P_INFO=17302206700|1672998315|1|netease_buff|00&99|null&null&null#DK&null#10#0|&0||17302206700; remember_me=U1094623157|yqEGb87jwJ6clll6qlaiF7vf3PCAjwxw; session=1-Hmzp3dus7t-7B8TTxbB85UX7xjgj2FFDhQ-VLMwhYHBB2045772013; csrf_token=IjUzNjUzZjEyNTFmYmQ5NmVlYTNhMTk1YTBmMWI3OTZmZTkyMjJlNjEi.FpmCEA.uV10d2oytIVBq41Y3kspAbTHrRU'
 cookies = {}
-for line in cookie_str.split(';'):
-    name, value = line.strip().split('=', 1)
-    cookies[name] = value
+# for line in cookie_str.split(';'):
+#     name, value = line.strip().split('=', 1)
+#     cookies[name] = value
 
 # Define the URLs and the names of the items
 urls = {
@@ -54,8 +53,6 @@ cost = 0
 cur = 0
 today=datetime.date.today()
 
-# print current date
-print(today)
 
 def show_notification(title, text):
     os.system("""
