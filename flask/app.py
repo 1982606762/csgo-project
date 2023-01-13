@@ -1,7 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for,Response
 import sqlite3
 import json
+import time
 
+today = time.strftime("%Y-%m-%d", time.localtime())
 duplicate = ["USP 消音版 | 印花集 (崭新出厂)","沙漠之鹰 | 钴蓝禁锢 (崭新出厂)"]
 db = '/Users/xuanlang/study/python/csgo-project/csgo.db'
 
@@ -52,10 +54,10 @@ def stock():
                     temp["data"].append(j[2])
         datalist["data1"].append(temp)
     # 计算成本，现价，盈利，盈利率
-    c.execute("SELECT SUM(OriginalPrice) FROM stock WHERE date = '%s'" % datalist["Date"][0])
+    c.execute("SELECT SUM(OriginalPrice) FROM stock WHERE date = '%s'" % today)
     datalist["cost"] = c.fetchall()[0][0]
     datalist["cost"] = round(datalist["cost"],2)
-    c.execute("SELECT SUM(CurrentPrice) FROM stock WHERE date = '%s'" % datalist["Date"][0])
+    c.execute("SELECT SUM(CurrentPrice) FROM stock WHERE date = '%s'" % today)
     datalist["curr"] = c.fetchall()[0][0]
     datalist["curr"] = round(datalist["curr"],2)
     datalist["profit"] = datalist["curr"] - datalist["cost"]
