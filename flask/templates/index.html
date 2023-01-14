@@ -9,12 +9,27 @@
     <title>Document</title>
 </head>
 <body>
-    <nav class="navbar bg-body-tertiary">
-        <div class="container-fluid">
-          <a class="navbar-brand">CSGO物品价格统计</a>
-          <div class="nav-item d-flex">Current Time is:&nbsp;<span id="time"> </span></div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand">CSGO物品价格统计</a>
+        <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto">
+              <li class="nav-item active">
+                <a class="nav-link" href="{{url_for('home')}}">首页</a>
+                </li>
+                <li class="nav-item">
+                <a class="nav-link" href="{{url_for('profit')}}">收益</a>
+                </li>
+                <li class="nav-item">
+                <a class="nav-link" href="{{url_for('log')}}">日志</a>
+                </li>
+            </ul>
+          <div class="nav-item ms-auto">Current Time is:&nbsp;<span id="time"> </span></div>
         </div>
-      </nav>
+        </div>
+    </nav>
     <div class="echart">
         <div id="main" style="width: 100%;height: 500px;" ></div>
     </div>
@@ -22,35 +37,12 @@
         <h5>成本：<span id="cost"></span>，现价：<span id="curr"></span>
             ，盈利：<span id="profit"></span>，盈利率：<span id="profitrate"></span></h3>
     </div>
-    <div class="iframe-container">
-        <!-- add iframe title -->
-        <h3>监控状态</h3>
-        <iframe class="frame1" src="https://round-sea-00206171.cronitorstatus.com/" frameborder="0"></iframe>
-    </div>
     <script src="../static/echarts.js"></script>    
-    <script src="../static/jquery.js"></script>    
+    <script src="../static/jquery.js"></script>   
+    <script src="../static/script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0-alpha1/js/bootstrap.min.js" integrity="sha512-eHx4nbBTkIr2i0m9SANm/cczPESd0DUEcfl84JpIuutE6oDxPhXvskMR08Wmvmfx5wUpVjlWdi82G5YLvqqJdA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.min.js"></script> -->
     <script>
-        function getNowFormatDate() {
-            var date = new Date();
-            var seperator1 = "-";
-            var seperator2 = ":";
-            var month = date.getMonth() + 1;
-            var strDate = date.getDate();
-            if (month >= 1 && month <= 9) {
-                month = "0" + month;
-            }
-            if (strDate >= 0 && strDate <= 9) {
-                strDate = "0" + strDate;
-            }
-            var currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate
-                    + " " + date.getHours() + seperator2 + date.getMinutes()
-                    + seperator2 + date.getSeconds();
-            return currentdate;
-        }
-        setInterval(function () {
-            $("#time").text(getNowFormatDate());
-        }, 1000);
-
         $.ajax({
             type: "GET",
             url: "http://127.0.0.1:5000/stock",

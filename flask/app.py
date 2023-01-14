@@ -13,13 +13,25 @@ app = Flask(__name__)
 def index():
     return render_template("index.html")
 
+@app.route('/home', methods=['GET'])
+def home():
+    return render_template("index.html")
+
+@app.route('/profit', methods=['GET'])
+def profit():
+    return render_template("profit.html")
+
+@app.route('/log', methods=['GET'])
+def log():
+    return render_template("log.html")
+
 @app.route('/stock', methods=['GET'])  
 def stock():
     # 链接数据库
     conn = sqlite3.connect(db)
     c = conn.cursor()
     # 取数据
-    c.execute('SELECT * FROM stock ORDER BY date ASC')
+    c.execute('SELECT * FROM stock ORDER BY date ASC , CurrentPrice DESC')
     data = c.fetchall()
     
     # 辅助数组
@@ -36,7 +48,11 @@ def stock():
         if i not in temp:
             temp.append(i)
     datalist["Date"] = temp
-    datalist["Name"] = list(set(names))
+    temp = []
+    for i in names:
+        if i not in temp:
+            temp.append(i)
+    datalist["Name"] = temp
     for i in datalist["Name"]:
         temp = {"name": "", "type": "", "stack": "", "data":[]}
         temp["name"] = i
@@ -67,4 +83,4 @@ def stock():
     # return Response(json.dumps(data), mimetype='application/json')
 
 if __name__ == '__main__':
-    app.run()
+    app.run(port=5000, debug=True)
