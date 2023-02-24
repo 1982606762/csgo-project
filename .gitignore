@@ -1,2 +1,5 @@
 csgo.db
 .DS_Store
+project.cfg
+/flask/nohup.out
+/__pycache__

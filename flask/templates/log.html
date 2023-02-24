@@ -9,32 +9,58 @@
     <title>Document</title>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand">CSGO物品价格统计</a>
-        <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto">
-              <li class="nav-item active">
-                <a class="nav-link" href="{{url_for('home')}}">首页</a>
-                </li>
-                <li class="nav-item">
-                <a class="nav-link" href="{{url_for('profit')}}">收益</a>
-                </li>
-                <li class="nav-item">
-                <a class="nav-link" href="{{url_for('log')}}">日志</a>
-                </li>
-            </ul>
-          <div class="nav-item ms-auto">Current Time is:&nbsp;<span id="time"> </span></div>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="iframe-container w-100">
+                <!-- add iframe title -->
+                <h3>监控状态</h3>
+                <iframe class="frame1" src="https://round-sea-00206171.cronitorstatus.com/" frameborder="0"></iframe>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-body">
+                <p>update log</p>
+                <div id="log-container"></div>
+            </div>
+            </div>
+          </div>
         </div>
-        </div>
-    </nav>
-    <div class="iframe-container">
-        <!-- add iframe title -->
-        <h3>监控状态</h3>
-        <iframe class="frame1" src="https://round-sea-00206171.cronitorstatus.com/" frameborder="0"></iframe>
-    </div>
+      </div>
+    
+
+    <script>
+        function updateLogs() {
+            // 创建XMLHttpRequest对象
+            var xhr = new XMLHttpRequest();
+            // 设置请求的URL和HTTP方法
+            xhr.open('GET', '/api/logs', true);
+            // 注册请求完成的回调函数
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    // 将响应的JSON格式数据解析为JavaScript对象
+                    var data = JSON.parse(xhr.responseText);
+                    // 获取日志内容并插入到页面中
+                    var logContainer = document.getElementById('log-container');
+                    var logs = data.logs;
+                    var logHtml = '';
+                    for (var i = 0; i < logs.length; i++) {
+                        logHtml += '<p>' + logs[i] + '</p>';
+                    }
+                    logContainer.innerHTML = logHtml;
+                }
+            };
+            // 发送请求
+            xhr.send();
+        }
+        window.onload = function() {
+            updateLogs();
+            setInterval(updateLogs, 1000); // 1秒钟更新一次
+        };
+
+    </script>
     <script src="../static/script.js"></script> 
     <script src="../static/jquery.js"></script>   
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0-alpha1/js/bootstrap.min.js" integrity="sha512-eHx4nbBTkIr2i0m9SANm/cczPESd0DUEcfl84JpIuutE6oDxPhXvskMR08Wmvmfx5wUpVjlWdi82G5YLvqqJdA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>

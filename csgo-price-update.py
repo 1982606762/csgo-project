@@ -4,7 +4,7 @@ import time
 import sqlite3
 import os
 
-db = '/Users/xuanlang/study/python/csgo-project/csgo.db'
+db = '/root/csgo-project/csgo.db'
 # Connect to the database
 conn = sqlite3.connect(db)
 c = conn.cursor()
@@ -22,28 +22,17 @@ cookies = {}
 urls = {
     '火神': 'https://buff.163.com/api/market/goods/buy_order?game=csgo&goods_id=33976&page_num=1&_=1672999623684',
     '爪子刀（★） | 森林 DDPAT (久经沙场': 'https://buff.163.com/api/market/goods/sell_order?game=csgo&goods_id=43003&page_num=1&sort_by=default&mode=&allow_tradable_cooldown=1&_=1672999692189',
-    'AWP | 野火 (略有磨损)': 'https://buff.163.com/api/market/goods/sell_order?game=csgo&goods_id=773720&page_num=1&sort_by=default&mode=&allow_tradable_cooldown=1&_=1672999732600',
     '摩托手套（★） | 交运 (略有磨损)': 'https://buff.163.com/api/market/goods/sell_order?game=csgo&goods_id=45493&page_num=1&sort_by=default&mode=&allow_tradable_cooldown=1&_=1673005486525',
-    '沙漠之鹰 | 钴蓝禁锢 (崭新出厂)': 'https://buff.163.com/api/market/goods/sell_order?game=csgo&goods_id=34396&page_num=1&sort_by=default&mode=&allow_tradable_cooldown=1&_=1673005525919',
-    '沙漠之鹰 | 钴蓝禁锢 (崭新出厂)1': 'https://buff.163.com/api/market/goods/sell_order?game=csgo&goods_id=34396&page_num=1&sort_by=default&mode=&allow_tradable_cooldown=1&_=1673005525919',
     '刺刀（★） | 澄澈之水 (略有磨损)': 'https://buff.163.com/api/market/goods/sell_order?game=csgo&goods_id=42373&page_num=1&sort_by=default&mode=&allow_tradable_cooldown=1&_=1673005852956',
-    '专业手套（★） | 大腕 (久经沙场)': 'https://buff.163.com/api/market/goods/sell_order?game=csgo&goods_id=45376&page_num=1&sort_by=default&mode=&allow_tradable_cooldown=1&_=1673005911415',
-    '沙漠之鹰 | 印花集 (崭新出厂)': 'https://buff.163.com/api/market/goods/sell_order?game=csgo&goods_id=781660&page_num=1&sort_by=default&mode=&allow_tradable_cooldown=1&_=1673005946734',
-    '摩托手套（★） | 嘭！ (久经沙场)': 'https://buff.163.com/api/market/goods/sell_order?game=csgo&goods_id=45432&page_num=1&sort_by=default&mode=&allow_tradable_cooldown=1&_=1673005982667',
     '专业手套（★） | 渐变大理石 (久经沙场)': 'https://buff.163.com/api/market/goods/sell_order?game=csgo&goods_id=835939&page_num=1&sort_by=default&mode=&allow_tradable_cooldown=1&_=1673006033934',
     'USP 消音版 | 印花集 (崭新出厂)': 'https://buff.163.com/api/market/goods/sell_order?game=csgo&goods_id=900565&page_num=1&sort_by=default&mode=&allow_tradable_cooldown=1&_=1673006071444',
-    'USP 消音版 | 印花集 (崭新出厂)1': 'https://buff.163.com/api/market/goods/sell_order?game=csgo&goods_id=900565&page_num=1&sort_by=default&mode=&allow_tradable_cooldown=1&_=1673006071444'
+    'USP 消音版 | 印花集 (崭新出厂)1': 'https://buff.163.com/api/market/goods/sell_order?game=csgo&goods_id=900565&page_num=1&sort_by=default&mode=&allow_tradable_cooldown=1&_=1673006071444',
 }
 stock = {
     '火神': [1099,1],
     '爪子刀（★） | 森林 DDPAT (久经沙场': [1340,1],
-    'AWP | 野火 (略有磨损)': [404,1],
     '摩托手套（★） | 交运 (略有磨损)': [870,1],
-    '沙漠之鹰 | 钴蓝禁锢 (崭新出厂)': [315,2],
     '刺刀（★） | 澄澈之水 (略有磨损)': [1395,1],
-    '专业手套（★） | 大腕 (久经沙场)': [1340,1],
-    '沙漠之鹰 | 印花集 (崭新出厂)': [590,1],
-    '摩托手套（★） | 嘭！ (久经沙场)': [2290,1],
     '专业手套（★） | 渐变大理石 (久经沙场)': [2020,1],
     'USP 消音版 | 印花集 (崭新出厂)': [1400,2],
 }
@@ -60,6 +49,7 @@ def show_notification(title, text):
               """.format(text, title))
 
 def insert():
+    log = ""
     for name, status in stock.items():
         num = status[1]
         url = urls[name]
@@ -74,11 +64,17 @@ def insert():
                 # 写入数据库
                 sql_text_insert = "INSERT INTO stock VALUES ('%s', '%s', '%s', '%s')" % (today,name, curprice, oldprice)
                 c.execute(sql_text_insert)
+                log += "添加" + name + "成功" + "价格：" + str(curprice)
             
             num -=1
-    conn.commit()
+    try:
+        conn.commit()
+    except:
+        pass
+    # log(log)
 
 def update():
+    log = ""
     for name, status in stock.items():
         num = status[1]
         url = urls[name]
@@ -91,8 +87,18 @@ def update():
                 # 写入数据库
                 sql_text_update = "UPDATE stock SET CurrentPrice = '%s' WHERE name = '%s' AND date = '%s'" % (curprice, name, today)
                 c.execute(sql_text_update)
+                log += "更新" + name + "成功" + "价格：" + str(curprice)
             num -=1
-    conn.commit()
+    try:
+        conn.commit()
+    except:
+        pass
+    # log(log)
+
+def log(content):
+    c.execute("INSERT INTO log (content, date) VALUES (?, ?)", 
+        (content, datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+    conn.commit()   
 
 def view():
     sql_text_select = "SELECT SUM(OriginalPrice) FROM stock WHERE date = '%s'" % today
@@ -122,8 +128,8 @@ def validate():
         show_notification("Error", "Cookie Maybe Expired, Please Check It")
         
 main()
-view()
-validate()
+# view()
+# validate()
 
 # 关闭数据库连接
 conn.close()
