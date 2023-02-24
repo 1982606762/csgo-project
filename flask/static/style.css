@@ -20,14 +20,15 @@ body .echart {
     padding-bottom: 40px;
     height: 500px;
 }
-.frame1{
-    height: 100%;
+.frame{
+    height:500px;
+    width:100%
 }
-
 .log-title{
     border-bottom:1px solid
 }
 
 #log-container{
-    height:500px
+    height:500px;
+    overflow:auto
 }
