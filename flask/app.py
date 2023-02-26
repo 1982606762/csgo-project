@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, redirect, url_for,Response,js
 import sqlite3
 import json
 import subprocess
-import chardet
 import time
 import configparser
 

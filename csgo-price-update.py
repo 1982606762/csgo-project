@@ -3,8 +3,11 @@ import datetime
 import time
 import sqlite3
 import os
+import configparser
 
-db = '/root/csgo-project/csgo.db'
+config = configparser.ConfigParser()
+config.read('project.cfg')
+db = config.get('DATABASE','db')
 # Connect to the database
 conn = sqlite3.connect(db)
 c = conn.cursor()
@@ -42,6 +45,58 @@ cost = 0
 cur = 0
 today=datetime.date.today()
 
+def insert_item(urldict):
+    now = datetime.datetime.now()
+    timenow = now.strftime("%Y-%m-%d %H:%M:%S")
+    ret = ""
+    for name, url in urldict.items():
+        # check if the item already exists in the database
+        c.execute("SELECT itemName FROM items WHERE itemName = ?", (name,))
+        result = c.fetchone()
+        if result is not None:
+            # update the item
+            c.execute("UPDATE items SET itemLink = ? WHERE itemName = ?", (url, name))
+            conn.commit()
+            ret += f"Record {name} updated successfully at {timenow}.\n"
+        else:
+            # insert a new record for the item
+            c.execute("INSERT INTO items (itemName, itemLink) VALUES (?, ?)", (name, url))
+            conn.commit()
+            ret += f"New record {name} inserted successfully at {timenow}.\n"
+    return ret
+
+def update_price():
+    today=datetime.date.today()
+    now = datetime.datetime.now()
+    timenow = now.strftime("%Y-%m-%d %H:%M:%S")
+    headers = {
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36'
+    }
+    ret = ""
+    c.execute('SELECT * FROM items')
+    data = c.fetchall()
+    for i in data:
+        name = i[1]
+        url = i[2]
+        r = requests.get(url, headers=headers, cookies={})
+        data = r.json()
+        # print(data)
+        if data['data']['items']:
+            price = round(eval(data['data']['items'][0]['price']),2)
+            # 判断是否有今天的数据
+            c.execute('SELECT * FROM price WHERE itemName = ? AND Date = ?', (name, today))
+            result = c.fetchone()
+            if result is not None:
+                # update the price
+                c.execute("UPDATE price SET itemPrice = ? WHERE itemName = ? AND Date = ?", (price, name, today))
+                conn.commit()
+                ret += f"Record {name} updated successfully at {timenow}.\n"
+            else:
+                # insert a new record for the item
+                c.execute("INSERT INTO price (itemName,itemPrice, Date) VALUES (?, ?, ?)", (name, price, today))
+                conn.commit()
+                ret += f"New record {name} inserted successfully at {timenow}.\n"
+    return ret
 
 def show_notification(title, text):
     os.system("""
@@ -119,6 +174,8 @@ def main():
         update()
     else:
         insert()
+    priceupdate = update_price()
+    show_notification("priceupdate", priceupdate)
 
 def validate():
     sql_text_select = "SELECT * FROM stock WHERE date = '%s'" % today
