@@ -2,9 +2,8 @@ import requests
 import datetime
 import time
 import sqlite3
-import os
 import configparser
-
+from notify import show_notification
 config = configparser.ConfigParser()
 config.read('project.cfg')
 db = config.get('DATABASE','db')
@@ -80,7 +79,6 @@ def update_price():
         url = i[2]
         r = requests.get(url, headers=headers, cookies={})
         data = r.json()
-        # print(data)
         if data['data']['items']:
             price = round(eval(data['data']['items'][0]['price']),2)
             # 判断是否有今天的数据
@@ -98,10 +96,6 @@ def update_price():
                 ret += f"New record {name} inserted successfully at {timenow}.\n"
     return ret
 
-def show_notification(title, text):
-    os.system("""
-              osascript -e 'display notification "{}" with title "{}"'
-              """.format(text, title))
 
 def insert():
     log = ""
@@ -163,7 +157,7 @@ def view():
     c.execute(sql_text_select)
     cur = c.fetchall()[0][0]
     str_result = "成本: %s 现价: %s 盈利: %s 盈利率: %s" % (cost, format(cur,".2f"), round(cur-cost,2), round((cur-cost)/cost* 100,2))
-    show_notification("csgo track result", str_result)
+    show_notification(str_result)
 
 def main():
     # 判断数据库中是否有今天的数据
@@ -175,14 +169,14 @@ def main():
     else:
         insert()
     priceupdate = update_price()
-    show_notification("priceupdate", priceupdate)
+    show_notification(priceupdate)
 
 def validate():
     sql_text_select = "SELECT * FROM stock WHERE date = '%s'" % today
     c.execute(sql_text_select)
     result = c.fetchall()
     if not result:
-        show_notification("Error", "Cookie Maybe Expired, Please Check It")
+        show_notification("Cookie Maybe Expired, Please Check It")
         
 main()
 # view()
