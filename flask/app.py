@@ -4,7 +4,7 @@ import json
 import subprocess
 import time
 import configparser
-
+from functions import *
 config = configparser.ConfigParser()
 config.read('../project.cfg')
 db = config.get('DATABASE','db')
@@ -26,6 +26,11 @@ def home():
 def profit():
     return render_template("profit.html",url=url)
 
+@app.route('/price', methods=['GET'])
+def price():
+    items = select_all_items(db)
+    return render_template("price.html",url=url,items=items)
+
 @app.route('/log', methods=['GET'])
 def log():
     return render_template("log.html")
@@ -34,6 +39,12 @@ def log():
 @app.route('/api/logs')
 def get_logs():
     output = subprocess.check_output(['tail', '-n', '50', '/root/qbitdown/log'])
+    logs = output.decode('utf-8', 'ignore').split('\n')
+    return jsonify({'logs': logs})
+
+@app.route('/api/pricelogs')
+def get_pricelogs():
+    output = subprocess.check_output(['tail', '-n', '50', '/root/csgo-project/notify.log'])
     logs = output.decode('utf-8', 'ignore').split('\n')
     return jsonify({'logs': logs})
 
@@ -108,6 +119,15 @@ def stock():
     
     return Response(json.dumps(datalist), mimetype='application/json')
     # return Response(json.dumps(data), mimetype='application/json')
+
+@app.route('/submititem', methods=['POST'])
+def submititem():
+    name = request.form.get('name')
+    url = request.form.get('url')
+    dict = {name:url}
+    res = insert_item(dict,db)
+    show_notification(res)
+    return redirect('/price')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')

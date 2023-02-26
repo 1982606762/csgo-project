@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/style.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="../static/favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../static/favicon_io//favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../static/favicon_io//favicon-16x16.png">
+    <link rel="manifest" href="../static/favicon_io//site.webmanifest">
+    <title>CS:GO Project</title>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <div class="card mt-4">
+          <div class="card-header">
+            <h2 class="card-title">添加链接</h2>
+          </div>
+          <div class="card-body">
+            <form method="POST" action="/submititem" onsubmit="sendData()>
+              <div class="form-group">
+                <label for="name">名称:</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+              </div>
+              <div class="form-group">
+                <label for="url">链接:</label>
+                <input type="url" class="form-control" id="url" name="url" required>
+              </div>
+              <button type="submit" class="btn btn-primary">确认</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="container">
+        <h2 class="mt-4 mb-3">Item列表</h2>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>名称</th>
+              <th>链接</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item[0] }}</td>
+                <td><a href="{{ item[1] }}" target="_blank">{{ item[1] }}</a></td>
+                <td><a href="/deleteitem/{{ item[0] }}" class="btn btn-danger">删除</a></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>      
+    <script>
+        function sendData() {
+            var name = $('#name').val();
+            var url = $('#url').val();
+
+            $.ajax({
+                url: '/submititem',
+                type: 'POST',
+                data: {
+                name: name,
+                url: url
+                },
+                success: function(response) {
+                    setTimeout(function() {
+                        alert("添加成功！" + response);
+                        window.location.href = '/price';
+                    }, 3000);
+                },
+                error: function(xhr, status, error) {
+                    alert("添加失败！" + error);
+                }
+            });
+            }
+    </script>      
+</body>
+</html>
