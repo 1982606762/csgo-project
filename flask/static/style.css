@@ -28,7 +28,7 @@ body .echart {
     border-bottom:1px solid
 }
 
-#log-container{
+.log-container{
     height:500px;
     overflow:auto
 }
