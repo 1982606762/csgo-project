@@ -12,6 +12,9 @@
             <a class="nav-link" href="{{url_for('profit')}}">收益</a>
             </li>
             <li class="nav-item">
+              <a class="nav-link" href="{{url_for('price')}}">价格</a>
+            </li>
+            <li class="nav-item">
             <a class="nav-link" href="{{url_for('log')}}">日志</a>
             </li>
             <li class="nav-item">
@@ -22,3 +25,17 @@
     </div>
     </div>
 </nav>
+<script>
+    function showTime() {
+        var date = new Date();
+        var year = date.getFullYear();
+        var month = date.getMonth() + 1;
+        var day = date.getDate();
+        var hour = date.getHours();
+        var minute = date.getMinutes();
+        var second = date.getSeconds();
+        var time = year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + second;
+        document.getElementById("time").innerHTML = time;
+    }
+    setInterval(showTime, 1000);
+</script>
