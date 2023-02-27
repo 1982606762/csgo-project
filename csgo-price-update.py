@@ -66,9 +66,9 @@ def insert_item(urldict):
     return ret
 
 def update_price():
-    today=datetime.date.today()
     now = datetime.datetime.now()
     timenow = now.strftime("%Y-%m-%d %H:%M:%S")
+    timestamp = int(datetime.datetime.now().timestamp() * 1000)
     headers = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36'
     }
@@ -77,23 +77,23 @@ def update_price():
     data = c.fetchall()
     for i in data:
         name = i[1]
-        url = i[2]
+        goods_id = i[2]
+        url = f'https://buff.163.com/api/market/goods/sell_order?game=csgo&goods_id={goods_id}&page_num=1&sort_by=default&mode=&allow_tradable_cooldown=1&_={timestamp}'
         r = requests.get(url, headers=headers, cookies={})
         data = r.json()
-        # print(data)
         if data['data']['items']:
             price = round(eval(data['data']['items'][0]['price']),2)
             # 判断是否有今天的数据
-            c.execute('SELECT * FROM price WHERE itemName = ? AND Date = ?', (name, today))
+            c.execute('SELECT * FROM price WHERE itemName = ? AND Date = ?', (name, timenow))
             result = c.fetchone()
             if result is not None:
                 # update the price
-                c.execute("UPDATE price SET itemPrice = ? WHERE itemName = ? AND Date = ?", (price, name, today))
+                c.execute("UPDATE price SET itemPrice = ? WHERE itemName = ? AND Date = ?", (price, name, timenow))
                 conn.commit()
                 ret += f"Record {name} updated successfully at {timenow}.\n"
             else:
                 # insert a new record for the item
-                c.execute("INSERT INTO price (itemName,itemPrice, Date) VALUES (?, ?, ?)", (name, price, today))
+                c.execute("INSERT INTO price (itemName,itemPrice, Date) VALUES (?, ?, ?)", (name, price, timenow))
                 conn.commit()
                 ret += f"New record {name} inserted successfully at {timenow}.\n"
     return ret
